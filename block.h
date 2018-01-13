@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <Qtcore>
+#include <QtCore>
 #include <QCryptographicHash>
 #include <QDebug>
 #include "transaction.h"

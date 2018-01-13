@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <Qtcore>
+#include <QtCore>
 #include "blockchain.h"
 
 using namespace std;
