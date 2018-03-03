@@ -337,7 +337,7 @@ int main(int argc, char *argv[])
 {
     try
     {
-        std::cout << "argc: " << argc << std::endl << "argv[]:" << argv[0] << std::endl;
+        //std::cout << "argc: " << argc << std::endl << "argv[]:" << argv[0] << std::endl;
 
         initMain();
     }
