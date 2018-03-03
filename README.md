@@ -3,7 +3,7 @@ a simple implementation of blockchain concept in Qt framework
 
 add new features:
 
-  	1- add merkle tree implementation
+  	1- add merkle tree implementation https://en.wikipedia.org/wiki/Merkle_tree 
 
   	2- block can contain more transactions
 
