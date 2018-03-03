@@ -7,11 +7,13 @@ add new features:
 
   	2- block can contain more transactions
 
-  	3- reward implementation
+  	3- reward for mining implementation
 
-  	3- save json to disk
+  	3- save blockchain data as json-format to disk
 
-  	4- save the whole chain to disk as binary, and read it again from disk, then re-calculate the hashs (for blocks & transactions) as a proof of validation merkle tree
+  	4- save the whole chain to disk as binary (blockchain objects serialization), 
+    and read it again from disk, then re-calculate the hashs (for blocks & transactions) 
+    as a proof of validation merkle tree
 
 
 ![alt text](https://github.com/zbahhah/SimpleBlockChain/blob/master/simpleBcJsonBinaryFiles.png)
@@ -31,7 +33,7 @@ binary file that saves the whole blockchain data
 
 
 
-
+Many thanks to SavjeeCoin: https://github.com/SavjeeTutorials/SavjeeCoin
 
 my reources are from this youtube:
 
