@@ -10,26 +10,36 @@ class BlockChain : public QObject
 {
     Q_OBJECT
 public:
-    Block* createGenesisBlock();
-    Block* getLatestBlock();
-    void addBlock(Block* newBlock);
-    bool isChainValid();
-
-    BlockChain(int pDifficulty);
+    BlockChain(int pDifficulty, int pMiningReward);
     explicit BlockChain(QObject *parent=0);
 
-    int getDifficulty() const;
-    void setDifficulty(int value);
+    void addGenesisBlock();
+    Block* getLatestBlock();
 
-    QVector<Block *> getChain() const;
-    void setChain(const QVector<Block *> &value);
+    bool isChainValid();
+
+    int getDifficulty() const;
+    void setDifficulty(int value);    
+
+    int getMiningReward() const;
+    void setMiningReward(int value);
+
+    void minePendingTransations(const QString & miningRewardAddress);
+    void addToPendingTransactions(Transaction* tx);
+    double getBalanceOfAddress(const QString & address);
+
+    std::vector<Block*> chain;
+    std::vector<Transaction*> pendingTransactions;
 
 private:
     int difficulty;
-    QVector<Block*> chain;
+    int miningReward;
+
     explicit BlockChain(const BlockChain& rhs) = delete;
     BlockChain& operator= (const BlockChain& rhs) = delete;
+
 };
+
 }
 
 

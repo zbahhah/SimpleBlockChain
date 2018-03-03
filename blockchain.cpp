@@ -1,4 +1,5 @@
 #include "blockchain.h"
+#include <iostream>
 
 namespace SBC
 {
@@ -6,6 +7,13 @@ namespace SBC
 BlockChain::BlockChain(QObject *parent) :
     QObject(parent)
 {
+}
+
+BlockChain::BlockChain(int pDifficulty, int pMiningReward):
+    difficulty(pDifficulty),
+    miningReward(pMiningReward)
+{
+    addGenesisBlock();
 }
 
 int BlockChain::getDifficulty() const
@@ -18,43 +26,88 @@ void BlockChain::setDifficulty(int value)
     difficulty = value;
 }
 
-QVector<Block *> BlockChain::getChain() const
+int BlockChain::getMiningReward() const
 {
-    return chain;
+    return miningReward;
 }
 
-void BlockChain::setChain(const QVector<Block *> &value)
+void BlockChain::setMiningReward(int value)
 {
-    chain = value;
+    miningReward = value;
 }
 
-Block* BlockChain::createGenesisBlock()
+void BlockChain::minePendingTransations(const QString& miningRewardAddress)
 {
-    Transaction* data = new Transaction() ;
-    data->setFrom("xManFrom");
-    data->setTo("xManTo");
-    data->setAmount(10000.0);
-    return new Block(0, Block::getGenesisBlockTimestamp(), data, Block::getGenesisHash());
+    auto block  = new Block(QDateTime::currentSecsSinceEpoch(), pendingTransactions, getLatestBlock()->getHash());
+
+    block->mineBlock(difficulty);
+
+    std::cout << "Block successfully mined! \n";
+
+    // add block to chain
+    chain.push_back(block);
+
+    pendingTransactions.clear();
+
+    auto tx = new Transaction("", miningRewardAddress, getMiningReward());
+
+    pendingTransactions.push_back(tx);
+
+}
+
+void BlockChain::addToPendingTransactions(Transaction *tx)
+{
+    pendingTransactions.push_back(tx);
+}
+
+double BlockChain::getBalanceOfAddress(const QString& address)
+{
+    double balance = 0.0;
+
+    for(const auto& block : chain)
+    {
+        for(const auto& tx : block->transactions)
+        {
+            if(tx->getFrom() == address)
+            {
+                balance -= tx->getAmount();
+            }
+
+            if(tx->getTo() == address)
+            {
+                balance += tx->getAmount();
+            }
+        }
+    }
+
+    return balance;
+}
+
+void BlockChain::addGenesisBlock()
+{
+    if(chain.size() > 0)
+        return;
+
+    std::vector<Transaction*> txs;
+    txs.push_back( new Transaction("xManFrom","xManTo",10000.0));
+
+    Block* genesisBlock = new Block(Block::getGenesisBlockTimestamp(), txs);
+    genesisBlock->setHash(Block::getGenesisHash());
+
+    chain.push_back(genesisBlock);
 }
 
 Block *BlockChain::getLatestBlock()
 {
-    return this->chain[this->chain.length() - 1];
-}
-
-void BlockChain::addBlock(Block *newBlock)
-{
-    newBlock->setPreviousHash(getLatestBlock()->getHash());
-    newBlock->mineBlock(this->getDifficulty());
-    this->chain.append(newBlock);
+    return chain[chain.size() - 1];
 }
 
 bool BlockChain::isChainValid()
 {
-    for (int i = 1; i < this->chain.length(); i++)
+    for (auto i = 1; i < chain.size(); i++)
     {
-        auto currentBlock = this->chain[i];
-        auto previousBlock = this->chain[i - 1];
+        auto currentBlock = chain[i];
+        auto previousBlock = chain[i - 1];
 
         if (currentBlock->getHash() != currentBlock->calculateHash())
         {
@@ -68,13 +121,6 @@ bool BlockChain::isChainValid()
     }
 
     return true;
-}
-
-BlockChain::BlockChain(int pDifficulty):
-    difficulty(pDifficulty)
-
-{
-    this->chain.append( this->createGenesisBlock());
 }
 
 }

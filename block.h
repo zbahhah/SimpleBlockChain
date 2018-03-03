@@ -12,12 +12,11 @@ class Transaction;
 
 class Block : public QObject
 {
-    Q_OBJECT
+    Q_OBJECT    
 public:
-    explicit Block(QObject *parent=0);
-
-    int getIndex() const;
-    void setIndex(int value);
+    Block(qint64 pTimestamp, const std::vector<Transaction*>& pTransactions, QByteArray pPreviousHash = nullptr);
+    Block(qint64 pTimestamp, const std::vector<Transaction*> &pTransactions,  QByteArray pPreviousHash, QByteArray pHash, uint pNonce);
+    explicit Block(QObject *parent=0);    
 
     qint64 getTimestamp() const;
     void setTimestamp(const qint64 &value);
@@ -25,33 +24,36 @@ public:
     uint getNonce() const;
     void setNonce(const uint &value);
 
-    Transaction *getData() const;
-    void setData(Transaction *value);
-
-    QByteArray calculateHash();
-
     QByteArray getPreviousHash() const;
     void setPreviousHash(const QByteArray &value);
 
     QByteArray getHash() const;
     void setHash(const QByteArray &value);
 
-    void mineBlock(int difficulty);
+    std::vector<Transaction*> transactions;
 
-    Block(int pIndex, qint64 pTimestamp, Transaction* pData, QByteArray pPreviousHash = nullptr);
+    void addTransaction(Transaction* value);
+
+    QByteArray calculateHash();
+    void mineBlock(int difficulty);    
 
     static qint64 getGenesisBlockTimestamp();
     static QByteArray getGenesisHash();
+
+    void MerkleComputation(const std::vector<QByteArray> &leaves, QByteArray *proot, bool *pmutated);
+    QByteArray ComputeMerkleRoot(const std::vector<QByteArray> &leaves, bool *mutated);
+    QByteArray BlockMerkleRoot(bool* mutated);
+
 private:
-    int index;
+    qint64 timestamp;
     QByteArray previousHash ;
-    qint64 timestamp ;
-    Transaction* data;
     QByteArray hash;
     uint nonce;
 
     explicit Block(const Block& rhs) = delete;
     Block& operator= (const Block& rhs) = delete;
+
+
 };
 
 }
